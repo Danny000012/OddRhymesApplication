@@ -1,0 +1,48 @@
+<!-- src/app/rap-posts/rap-posts.component.html -->
+<div>
+  <h2>Odd Rhymes</h2>
+  
+  <!-- Loop through each post -->
+  <div *ngFor="let post of rapPosts">
+    <h3>{{ post.user }}</h3>
+    <p>{{ post.text }}</p>
+
+    <!-- Display comments for each post -->
+    <div *ngFor="let comment of post.comments">
+      <strong>{{ comment.user }}:</strong>
+      <p>{{ comment.text }}</p>
+      <button (click)="updateComment(post._id, comment._id)">Update Comment</button>
+      <button (click)="deleteComment(post._id, comment._id)">Delete Comment</button>
+    </div>
+
+    <!-- Comment section for each post -->
+    <div>
+      <input [(ngModel)]="newComment.user" placeholder="Your Name" />
+      <textarea [(ngModel)]="newComment.text" placeholder="Add a comment"></textarea>
+      <button (click)="addComment(post._id)">Add Comment</button>
+    </div>
+
+    <!-- Buttons for updating and deleting posts -->
+    <button (click)="updatePost(post._id)">Update Post</button>
+    <button (click)="deletePost(post._id)">Delete Post</button>
+    <button (click)="likePost(post._id)">Like Post</button>
+    <button (click)="ratePost(post._id)">Rate Post</button>
+  </div>
+  
+  <!-- Form to add a new post -->
+  <h3>Add a new post</h3>
+  <input [(ngModel)]="newPost.user" placeholder="User" />
+  <textarea [(ngModel)]="newPost.text" placeholder="Rap text"></textarea>
+  <button (click)="addPost()">Add Post</button>
+
+  <!-- Search form -->
+  <h3>Search Posts</h3>
+  <input [(ngModel)]="searchUser" placeholder="User" />
+  <input [(ngModel)]="searchText" placeholder="Text" />
+  <button (click)="searchPosts()">Search</button>
+
+  <!-- Pagination controls -->
+  <h3>Pagination</h3>
+  <button (click)="previousPage()">Previous</button>
+  <button (click)="nextPage()">Next</button>
+</div>
