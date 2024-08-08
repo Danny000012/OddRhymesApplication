@@ -62,20 +62,21 @@ router.put('/:id', async (req, res) => {
 
 // Delete a post
 router.delete('/:id', async (req, res) => {
-    console.log(`Deleting post with ID: ${req.params.id}`);
-    try {
-      const deletedPost = await RapPost.findByIdAndDelete(req.params.id);
-      if (!deletedPost) {
-        console.log('Post not found');
-        return res.status(404).json({ error: 'Post not found' });
-      }
-      console.log('Post deleted successfully');
-      res.status(204).send();  // 204 No Content
-    } catch (err) {
-      console.error('Error deleting post:', err);
-      res.status(500).json({ error: 'An error occurred while deleting the post' });
+  console.log(`Deleting post with ID: ${req.params.id}`);
+  try {
+    const deletedPost = await RapPost.findByIdAndDelete(req.params.id);
+    if (!deletedPost) {
+      console.log('Post not found');
+      return res.status(404).json({ error: 'Post not found' });
     }
-  });
+    console.log('Post deleted successfully');
+    res.status(204).send();  // 204 No Content
+  } catch (err) {
+    console.error('Error deleting post:', err);
+    res.status(500).json({ error: 'An error occurred while deleting the post' });
+  }
+});
+
   
 
 // Add a comment to a post

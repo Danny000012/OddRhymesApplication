@@ -1,39 +1,17 @@
-.rap-posts-container {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  
-  .post {
-    border: 1px solid #ddd;
-    margin-bottom: 20px;
-    padding: 10px;
-  }
-  
-  .comment {
-    border-top: 1px solid #eee;
-    padding-top: 5px;
-  }
-  
-  .comment-section {
-    margin-top: 10px;
-  }
-  
-  textarea {
-    width: 100%;
-    height: 60px;
-    margin-bottom: 10px;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
-  
-  button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
-  }
-  
+/* src/app/rap-posts/rap-posts.component.css */
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+button {
+  margin-right: 0.5rem;
+}
+
+textarea {
+  resize: none;
+}

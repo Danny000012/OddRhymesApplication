@@ -1,4 +1,5 @@
 // src/app/rap-posts/rap-posts.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { RapPostsService } from '../rap-posts.service';
 
@@ -48,7 +49,14 @@ export class RapPostsComponent implements OnInit {
   }
 
   deletePost(postId: string): void {
-    // Implement delete logic and confirm deletion
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.rapPostsService.deletePost(postId).subscribe(() => {
+        // Remove the deleted post from the local array
+        this.rapPosts = this.rapPosts.filter(post => post._id !== postId);
+      }, error => {
+        console.error('Error deleting post:', error);
+      });
+    }
   }
 
   updateComment(postId: string, commentId: string): void {
