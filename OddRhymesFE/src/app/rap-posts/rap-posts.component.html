@@ -3,14 +3,16 @@
   <h2 class="my-4">Odd Rhymes [OR]</h2>
 
   <!-- Search form -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <h4 class="card-title">Search Posts</h4>
-      <input [(ngModel)]="searchUser" class="form-control mb-2" placeholder="User" />
-      <input [(ngModel)]="searchText" class="form-control mb-2" placeholder="Text" />
-      <button class="btn btn-primary" (click)="searchPosts()">Search</button>
-    </div>
+<div class="card mb-4">
+  <div class="card-body">
+    <h4 class="card-title">Search Posts</h4>
+    <input [(ngModel)]="searchUser" class="form-control mb-2" placeholder="User" />
+    <input [(ngModel)]="searchText" class="form-control mb-2" placeholder="Text" />
+    <input [(ngModel)]="searchId" class="form-control mb-2" placeholder="Post ID" />
+    <input [(ngModel)]="searchLimit" type="number" class="form-control mb-2" placeholder="Number of Posts" />
+    <button class="btn btn-primary" (click)="searchPosts()">Search</button>
   </div>
+</div>
 
   <!-- Loop through each post -->
   <div *ngFor="let post of rapPosts" class="card mb-4">

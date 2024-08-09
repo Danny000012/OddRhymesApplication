@@ -55,15 +55,17 @@ export class RapPostsService {
     return this.http.post<any>(`${this.apiUrl}/${postId}/rate`, { rating });
   }
 
-  // Search posts by user or text
-  searchPosts(user?: string, text?: string): Observable<any> {
+  searchPosts(user?: string, text?: string, id?: string, limit?: number, page?: number): Observable<any> {
     let searchParams = new URLSearchParams();
     if (user) searchParams.set('user', user);
     if (text) searchParams.set('text', text);
-
+    if (id) searchParams.set('id', id);
+    if (limit) searchParams.set('limit', limit.toString());
+    if (page) searchParams.set('page', page.toString());
+  
     return this.http.get<any>(`${this.apiUrl}/search?${searchParams.toString()}`);
   }
-
+  
   // Get posts with pagination
   getPaginatedPosts(page: number, limit: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/paginate?page=${page}&limit=${limit}`);

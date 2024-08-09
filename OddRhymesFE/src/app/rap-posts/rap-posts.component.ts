@@ -1,5 +1,3 @@
-// src/app/rap-posts/rap-posts.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { RapPostsService } from '../rap-posts.service';
 
@@ -14,8 +12,9 @@ export class RapPostsComponent implements OnInit {
   newComment = { user: '', text: '' };
   searchUser = '';
   searchText = '';
+  searchLimit: number = 10; // Default limit
+  searchId = '';
   currentPage = 1;
-  pageSize = 10;
 
   constructor(private rapPostsService: RapPostsService) { }
 
@@ -81,19 +80,29 @@ export class RapPostsComponent implements OnInit {
   }
 
   searchPosts(): void {
-    // Implement search logic
-    // Use this.searchUser and this.searchText
+    this.rapPostsService.searchPosts(this.searchUser, this.searchText, this.searchId, this.searchLimit, this.currentPage).subscribe(posts => {
+      this.rapPosts = posts;
+    });
   }
-
+  
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.loadPosts();
+      this.searchPosts();
     }
   }
-
+  
   nextPage(): void {
     this.currentPage++;
-    this.loadPosts();
+    this.searchPosts();
+  }
+
+  clearSearch(): void {
+    this.searchUser = '';
+    this.searchText = '';
+    this.searchId = '';
+    this.searchLimit = 10;
+    this.currentPage = 1; // Reset to the first page
+    this.loadPosts(); // Optionally reload all posts or search results
   }
 }
