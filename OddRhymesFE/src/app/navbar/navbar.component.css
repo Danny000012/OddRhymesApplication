@@ -1,0 +1,13 @@
+/* src/app/navbar/navbar.component.css */
+.navbar-brand {
+    font-weight: bold;
+  }
+  
+  .nav-link {
+    margin-right: 15px;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  

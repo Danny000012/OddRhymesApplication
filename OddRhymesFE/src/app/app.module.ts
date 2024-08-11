@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router'; // Import RouterModule and Routes
 import { AppComponent } from './app.component';
 import { RapPostsComponent } from './rap-posts/rap-posts.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 // Define routes
 const routes: Routes = [
@@ -15,7 +16,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    RapPostsComponent
+    RapPostsComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
