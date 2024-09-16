@@ -21,7 +21,7 @@ const routes: Routes = [
     AppComponent,
     RapPostsComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
     NavbarComponent
   ],
   imports: [
