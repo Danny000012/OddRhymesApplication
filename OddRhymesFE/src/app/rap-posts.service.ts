@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class RapPostsService {
   private apiUrl = 'http://localhost:3000/api/rapposts';
+  private authUrl = 'http://localhost:3000/api/auth'; 
 
   constructor(private http: HttpClient) { }
 

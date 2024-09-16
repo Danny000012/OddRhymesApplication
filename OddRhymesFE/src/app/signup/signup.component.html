@@ -1,0 +1,16 @@
+<!-- src/app/signup/signup.component.html -->
+<div class="container">
+    <h2 class="my-4">Sign Up</h2>
+    <form (ngSubmit)="signup()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" [(ngModel)]="signupData.email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" [(ngModel)]="signupData.password" name="password" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+  </div>
+  
