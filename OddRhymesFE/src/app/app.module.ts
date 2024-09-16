@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { RapPostsComponent } from './rap-posts/rap-posts.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 // Define routes
 const routes: Routes = [
@@ -21,6 +22,7 @@ const routes: Routes = [
     RapPostsComponent,
     LoginComponent,
     SignupComponent
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
