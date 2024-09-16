@@ -117,19 +117,26 @@ router.delete('/:postId/comments/:commentId', async (req, res) => {
   
 // Search posts
 router.get('/search', async (req, res) => {
-  const { user, text } = req.query;
+  const { user, text, id, limit, page } = req.query;
   try {
     const query = {};
     if (user) query.user = user;
     if (text) query.text = new RegExp(text, 'i');  // Case-insensitive search
+    if (id) query._id = id;  // Search by specific ID
 
-    const posts = await RapPost.find(query);
+    // Pagination
+    const limitNum = parseInt(limit) || 10;
+    const pageNum = parseInt(page) || 1;
+    const skip = (pageNum - 1) * limitNum;
+
+    const posts = await RapPost.find(query).limit(limitNum).skip(skip);
     res.json(posts);
   } catch (err) {
     console.error('Error searching posts:', err);
     res.status(500).json({ error: 'An error occurred while searching posts' });
   }
 });
+
 
 // Pagination
 router.get('/paginate', async (req, res) => {
