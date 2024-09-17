@@ -2,11 +2,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RapPostsComponent } from './rap-posts/rap-posts.component';
-// Import other components if needed
+import { LoginComponent } from './login/login.component';
+//import { DashboardComponent } from './dashboard/dashboard.component';
+import { AuthGuard } from './auth.guard'; // Adjust path as needed
 
 const routes: Routes = [
   { path: '', component: RapPostsComponent },
   { path: 'posts', component: RapPostsComponent },
+  { path: 'login', component: LoginComponent },
+  //{ path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: '', redirectTo: '/login', pathMatch: 'full' }
   // Add other routes here
 ];
 

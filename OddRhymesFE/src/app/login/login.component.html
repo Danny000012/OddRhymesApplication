@@ -1,16 +1,14 @@
-<!-- src/app/login/login.component.html -->
 <div class="container">
-    <h2 class="my-4">Login</h2>
-    <form (ngSubmit)="login()">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" class="form-control" [(ngModel)]="loginData.email" name="email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" class="form-control" [(ngModel)]="loginData.password" name="password" required />
-      </div>
-      <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+  <h2 class="my-4">Login</h2>
+  <form (ngSubmit)="login()">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" class="form-control" [(ngModel)]="loginData.email" name="email" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" class="form-control" [(ngModel)]="loginData.password" name="password" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+  </form>
 </div>
-  

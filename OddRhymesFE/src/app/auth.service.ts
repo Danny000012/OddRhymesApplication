@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth'; // Adjust the URL as needed
+  private apiUrl = 'http://localhost:3000/api/users'; // Correct URL for users
 
   constructor(private http: HttpClient) { }
 
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   // Method to get headers with the token
-  private getHeaders(): HttpHeaders {
+  getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token'); // or get it from cookies
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
