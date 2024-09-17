@@ -2,19 +2,14 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';  // This import is optional if not using RouterModule here
 import { AppComponent } from './app.component';
 import { RapPostsComponent } from './rap-posts/rap-posts.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { NavbarComponent } from './navbar/navbar.component';
-
-// Define routes
-const routes: Routes = [
-  { path: '', component: RapPostsComponent }, // Default route
-  { path: 'login', component: LoginComponent }, // Route to LoginComponent
-  { path: 'signup', component: SignupComponent } // Route to SignupComponent
-];
+import { ProfileComponent } from './profile/profile.component';
+import { AppRoutingModule } from './app-routing.module';  // Import AppRoutingModule
 
 @NgModule({
   declarations: [
@@ -22,13 +17,14 @@ const routes: Routes = [
     RapPostsComponent,
     LoginComponent,
     SignupComponent,
-    NavbarComponent
+    NavbarComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot(routes) // Add RouterModule with routes
+    AppRoutingModule  // Use AppRoutingModule for routing configuration
   ],
   providers: [
     provideHttpClient(withFetch())

@@ -71,4 +71,8 @@ export class RapPostsService {
   getPaginatedPosts(page: number, limit: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/paginate?page=${page}&limit=${limit}`);
   }
+
+  getUserPosts(username: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user/${username}`);
+  }  
 }

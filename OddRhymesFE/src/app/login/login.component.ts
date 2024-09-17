@@ -16,7 +16,7 @@ export class LoginComponent {
     this.authService.login(this.loginData).subscribe(response => {
       // Handle successful login
       localStorage.setItem('token', response.token); // Store token or other data
-      this.router.navigate(['/']); // Redirect to home or other route
+      this.router.navigate(['/profile']); // Redirect to home or other route
     }, error => {
       console.error('Login error:', error);
       // Handle error (e.g., display a message to the user)

@@ -41,4 +41,8 @@ export class AuthService {
       'Content-Type': 'application/json'
     });
   }
+
+  getUserProfile(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/profile`, { headers: this.getHeaders() });
+  }  
 }

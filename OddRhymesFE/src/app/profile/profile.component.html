@@ -1,0 +1,16 @@
+<div class="container">
+    <h2 class="my-4">User Profile</h2>
+    <div *ngIf="user">
+      <h3>{{ user.username }}</h3>
+      <p>Email: {{ user.email }}</p>
+    </div>
+    <h3>My Posts</h3>
+    <ul>
+      <li *ngFor="let post of posts">
+        <h4>{{ post.title }}</h4>
+        <p>{{ post.content }}</p>
+        <button (click)="deletePost(post._id)">Delete</button>
+      </li>
+    </ul>
+  </div>
+  

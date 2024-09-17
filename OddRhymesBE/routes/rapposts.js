@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const RapPost = require('../models/RapPost');
+const authenticate = require('../middleware/authenticate');  // Adjust the path
+
+router.use(authenticate);  // Apply to all routes
 
 // Get all posts
 router.get('/', async (req, res) => {
@@ -48,11 +51,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update a post
+// Update a post (only if the user is the author)
 router.put('/:id', async (req, res) => {
   try {
+    const post = await RapPost.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    if (post.user !== req.user.username) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const updatedPost = await RapPost.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedPost) return res.status(404).json({ error: 'Post not found' });
     res.json(updatedPost);
   } catch (err) {
     console.error('Error updating post:', err);
@@ -60,16 +69,17 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete a post
+// Delete a post (only if the user is the author)
 router.delete('/:id', async (req, res) => {
-  console.log(`Deleting post with ID: ${req.params.id}`);
   try {
-    const deletedPost = await RapPost.findByIdAndDelete(req.params.id);
-    if (!deletedPost) {
-      console.log('Post not found');
-      return res.status(404).json({ error: 'Post not found' });
+    const post = await RapPost.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    if (post.user !== req.user.username) {
+      return res.status(403).json({ error: 'Unauthorized' });
     }
-    console.log('Post deleted successfully');
+
+    await RapPost.findByIdAndDelete(req.params.id);
     res.status(204).send();  // 204 No Content
   } catch (err) {
     console.error('Error deleting post:', err);
@@ -77,15 +87,14 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-  
-
-// Add a comment to a post
+// Add a comment to a post (only if the user is the author of the comment)
 router.post('/:id/comments', async (req, res) => {
   try {
     const post = await RapPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    post.comments.push(req.body);
+    const comment = { ...req.body, user: req.user.username };
+    post.comments.push(comment);
     await post.save();
     res.status(200).json(post);
   } catch (err) {
@@ -94,27 +103,28 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
-// Delete a comment
+// Delete a comment (only if the user is the author of the comment)
 router.delete('/:postId/comments/:commentId', async (req, res) => {
-    try {
-      const post = await RapPost.findById(req.params.postId);
-      if (!post) return res.status(404).json({ error: 'Post not found' });
-  
-      // Remove the comment from the comments array using the pull operator
-      const result = await RapPost.updateOne(
-        { _id: req.params.postId },
-        { $pull: { comments: { _id: req.params.commentId } } }
-      );
-  
-      if (result.modifiedCount === 0) return res.status(404).json({ error: 'Comment not found' });
-  
-      res.status(204).send();  // 204 No Content
-    } catch (err) {
-      console.error('Error deleting comment:', err);
-      res.status(500).json({ error: 'An error occurred while deleting the comment' });
+  try {
+    const post = await RapPost.findById(req.params.postId);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+    if (comment.user !== req.user.username) {
+      return res.status(403).json({ error: 'Unauthorized' });
     }
+
+    post.comments.pull(req.params.commentId);
+    await post.save();
+    res.status(204).send();  // 204 No Content
+  } catch (err) {
+    console.error('Error deleting comment:', err);
+    res.status(500).json({ error: 'An error occurred while deleting the comment' });
+  }
 });
-  
+
 // Search posts
 router.get('/search', async (req, res) => {
   const { user, text, id, limit, page } = req.query;
@@ -136,7 +146,6 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while searching posts' });
   }
 });
-
 
 // Pagination
 router.get('/paginate', async (req, res) => {
