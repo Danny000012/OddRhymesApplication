@@ -9,12 +9,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-console.log('MONGODB_URI:', MONGODB_URI);
-console.log('PORT:', PORT);
-
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200', // Replace with your frontend URL
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)
@@ -22,11 +23,17 @@ mongoose.connect(MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
-const authRoutes = require('./routes/auth');  // Import authentication routes
-const rappostsRoutes = require('./routes/rapposts');  // Import rap posts routes
+const rappostsRoutes = require('./routes/rapposts');
+const userRoutes = require('./routes/userRoutes');
 
-app.use('/api/auth', authRoutes);  // Authentication routes
 app.use('/api/rapposts', rappostsRoutes);  // Rap posts routes
+app.use('/api/users', userRoutes); // Authentication routes
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
