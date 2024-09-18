@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { RapPostsService } from '../rap-posts.service';
-import { UserService } from '../user.service'; // Adjust the path as necessary
+import { RapPostsService } from '../services/rap-posts.service';
+import { UserService } from '../services/user.service'; // Adjust the path as necessary
 
 @Component({
   selector: 'app-profile',

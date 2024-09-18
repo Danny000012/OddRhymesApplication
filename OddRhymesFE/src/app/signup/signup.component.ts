@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service'; // Make sure this path is correct
+import { AuthService } from '../services/auth.service'; // Make sure this path is correct
 
 @Component({
   selector: 'app-signup',
