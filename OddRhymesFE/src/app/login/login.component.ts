@@ -9,17 +9,30 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginComponent {
   loginData = { email: '', password: '' };
+  errorMessage: string | null = null;
+  isLoading = false;
 
   constructor(private authService: AuthService, private router: Router) { }
-
   login(): void {
-    this.authService.login(this.loginData).subscribe(response => {
-      // Handle successful login
-      localStorage.setItem('token', response.token); // Store token or other data
-      this.router.navigate(['/profile']); // Redirect to home or other route
-    }, error => {
-      console.error('Login error:', error);
-      // Handle error (e.g., display a message to the user)
-    });
+    if (!this.loginData.email || !this.loginData.password) {
+      this.errorMessage = 'Please fill in both fields.';
+      return;
+    }
+  
+    this.isLoading = true;
+    this.authService.login(this.loginData).subscribe(
+      response => {
+        this.isLoading = false;
+        localStorage.setItem('token', response.token); // Store token
+        
+        // Redirect to the profile using the username
+        this.router.navigate(['/profile', response.username]); // Ensure username is part of response
+      },
+      error => {
+        this.isLoading = false;
+        this.errorMessage = 'Login failed. Please check your credentials.';
+        console.error('Login error:', error);
+      }
+    );
   }
 }

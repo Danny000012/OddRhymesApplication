@@ -1,16 +1,30 @@
-<div class="container">
-    <h2 class="my-4">User Profile</h2>
-    <div *ngIf="user">
-      <h3>{{ user.username }}</h3>
-      <p>Email: {{ user.email }}</p>
+<div class="profile-container">
+    <h1 class="profile-title">User Profile</h1>
+    
+    <div *ngIf="user; else loading">
+      <div class="profile-info">
+        <h2>Profile Details</h2>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+      </div>
+      
+      <div *ngIf="posts.length > 0; else noPosts">
+        <h2>User Posts</h2>
+        <ul class="post-list">
+          <li *ngFor="let post of posts" class="post-item">
+            <p>{{ post.content }}</p> <!-- Adjust according to your post structure -->
+            <button class="delete-button" (click)="deletePost(post._id)">Delete</button>
+          </li>
+        </ul>
+      </div>
+  
+      <ng-template #noPosts>
+        <p>No posts found.</p>
+      </ng-template>
     </div>
-    <h3>My Posts</h3>
-    <ul>
-      <li *ngFor="let post of posts">
-        <h4>{{ post.title }}</h4>
-        <p>{{ post.content }}</p>
-        <button (click)="deletePost(post._id)">Delete</button>
-      </li>
-    </ul>
+    
+    <ng-template #loading>
+      <p class="loading-text">Loading user profile...</p>
+    </ng-template>
   </div>
   

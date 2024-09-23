@@ -20,7 +20,7 @@ export class AuthService {
           return throwError(error); // Propagate the error
         })
       );
-  }
+  }   
 
   // Method for signing up a new user
   signup(user: { email: string; password: string; username: string }): Observable<any> {

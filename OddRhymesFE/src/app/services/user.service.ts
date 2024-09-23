@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,7 +10,16 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getUserProfile(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/profile`); // Adjust the endpoint as necessary
+  // Method to get headers with the token
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
+
+  getUserProfile(username: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/profile/${username}`, { headers: this.getHeaders() });
   }
 }

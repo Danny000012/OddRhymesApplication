@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { RapPostsService } from '../services/rap-posts.service';
-import { UserService } from '../services/user.service'; // Adjust the path as necessary
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -10,21 +11,32 @@ import { UserService } from '../services/user.service'; // Adjust the path as ne
 export class ProfileComponent implements OnInit {
   user: any;
   posts: any[] = [];
+  username: string = ''; // Initialize to an empty string
 
   constructor(
     private postService: RapPostsService,
-    private userService: UserService
+    private userService: UserService,
+    private route: ActivatedRoute // Inject ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.loadUserProfile();
+    this.route.params.subscribe(params => {
+      this.username = params['username']; // Get username from route parameters
+      this.loadUserProfile(); // Call to load the user profile
+    });
   }
 
   loadUserProfile(): void {
-    this.userService.getUserProfile().subscribe(user => {
-      this.user = user;
-    });
-  }
+    this.userService.getUserProfile(this.username).subscribe(
+      user => {
+        this.user = user;
+        this.loadUserPosts(this.user.username); // Load posts after user profile is fetched
+      },
+      error => {
+        console.error('Error fetching user profile:', error);
+      }
+    );
+  }  
 
   loadUserPosts(username: string): void {
     this.postService.getUserPosts(username).subscribe(posts => {
