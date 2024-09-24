@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,12 @@ export class UserService {
   }
 
   getUserProfile(username: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/profile/${username}`, { headers: this.getHeaders() });
+    return this.http.get<any>(`${this.apiUrl}/profile/${username}`, { headers: this.getHeaders() })
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching user profile:', error);
+          throw error; // Re-throw the error to handle it in the component
+        })
+      );
   }
 }

@@ -242,4 +242,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get user profile by username
+router.get('/profile/:username', async (req, res) => {
+  try {
+    const user = await users.findOne({ username: req.params.username });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    // Exclude sensitive information if needed
+    const { password, ...userProfile } = user.toObject();
+    res.json(userProfile);
+  } catch (err) {
+    console.error('Error retrieving user profile:', err);
+    res.status(500).json({ error: 'An error occurred while retrieving the user profile' });
+  }
+});
+
+
 module.exports = router;

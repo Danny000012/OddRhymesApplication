@@ -24,6 +24,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login route
+// Login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -45,7 +46,9 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
-    res.json({ token, message: 'Login successful' });
+    
+    // Include the username in the response
+    res.json({ token, username: user.username, message: 'Login successful' });
   } catch (error) {
     console.error('Login error:', error); // Add detailed error logging
     res.status(500).json({ message: 'Internal Server Error' });

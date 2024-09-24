@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { RapPostsService } from '../services/rap-posts.service'; // Import the service
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,12 @@ export class LoginComponent {
   errorMessage: string | null = null;
   isLoading = false;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private rapPostsService: RapPostsService, // Inject the service
+    private router: Router
+  ) {}
+
   login(): void {
     if (!this.loginData.email || !this.loginData.password) {
       this.errorMessage = 'Please fill in both fields.';
@@ -24,9 +30,20 @@ export class LoginComponent {
       response => {
         this.isLoading = false;
         localStorage.setItem('token', response.token); // Store token
-        
-        // Redirect to the profile using the username
-        this.router.navigate(['/profile', response.username]); // Ensure username is part of response
+
+        // Fetch the user profile after successful login
+        this.rapPostsService.getUserProfileByName(response.username).subscribe(
+          userProfile => {
+            // Optionally store the user profile in local storage or a service if needed
+            // Navigate to the profile page
+            this.router.navigate(['/profile', userProfile.username]);
+          },
+          error => {
+            this.isLoading = false;
+            this.errorMessage = 'Failed to fetch user profile.';
+            console.error('Profile fetch error:', error);
+          }
+        );
       },
       error => {
         this.isLoading = false;
