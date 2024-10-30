@@ -2,18 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { StorageService } from './storage.service'; // Import StorageService
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/api/rapposts'; // Replace with your API URL
+  private apiUrl = 'http://localhost:3000/api/rapposts';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private storageService: StorageService) { }
 
-  // Method to get headers with the token
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+    const token = this.storageService.getItem('token'); // Use StorageService
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -22,11 +22,16 @@ export class UserService {
 
   getUserProfile(username: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/profile/${username}`, { headers: this.getHeaders() })
-      .pipe(
-        catchError(error => {
-          console.error('Error fetching user profile:', error);
-          throw error; // Re-throw the error to handle it in the component
-        })
-      );
+      .pipe(catchError(error => {
+        console.error('Error fetching user profile:', error);
+        throw error;
+      }));
   }
+
+  // Method to get the current username
+  getCurrentUsername(): string | null {
+    const username = this.storageService.getItem('username');
+    console.log('Retrieved Username:', username);
+    return username;
+  }  
 }

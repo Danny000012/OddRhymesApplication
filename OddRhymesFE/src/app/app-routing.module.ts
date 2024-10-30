@@ -10,8 +10,8 @@ const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },  // Redirect root to login
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'profile/:username', component: ProfileComponent },
   { path: 'posts', component: RapPostsComponent },
+  { path: 'profile/:username', component: ProfileComponent },
   //{ path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }  // Wildcard route for handling unknown paths
 ];

@@ -11,18 +11,19 @@ import { UserService } from '../services/user.service';
 export class ProfileComponent implements OnInit {
   user: any;
   posts: any[] = [];
-  username: string = ''; // Initialize to an empty string
+  username: string = '';
+  newPostContent: string = ''; // Property for new post content
 
   constructor(
     private postService: RapPostsService,
     private userService: UserService,
-    private route: ActivatedRoute // Inject ActivatedRoute
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.username = params['username']; // Get username from route parameters
-      this.loadUserProfile(); // Call to load the user profile
+      this.username = params['username'];
+      this.loadUserProfile();
     });
   }
 
@@ -30,7 +31,7 @@ export class ProfileComponent implements OnInit {
     this.userService.getUserProfile(this.username).subscribe(
       user => {
         this.user = user;
-        this.loadUserPosts(this.user.username); // Load posts after user profile is fetched
+        this.loadUserPosts(this.user.username);
       },
       error => {
         console.error('Error fetching user profile:', error);
@@ -47,11 +48,49 @@ export class ProfileComponent implements OnInit {
   deletePost(postId: string): void {
     this.postService.deletePost(postId).subscribe(
       () => {
-        // Remove the post from the UI
         this.posts = this.posts.filter(post => post._id !== postId);
       },
       error => {
         console.error('Error deleting post:', error);
+      }
+    );
+  }
+
+  onImageChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.user.profilePicture = reader.result as string;
+        // Optionally upload the image
+        this.uploadProfilePicture(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  uploadProfilePicture(file: File): void {
+    // Implement upload logic here (e.g., call a service method)
+  }
+
+  addPost(): void {
+    if (!this.newPostContent) {
+      alert('Please enter post content.');
+      return;
+    }
+
+    const post = {
+      content: this.newPostContent,
+      user: this.user.username, // Assuming the username is used here
+    };
+
+    this.postService.createRapPost(post).subscribe(
+      response => {
+        this.posts.push(response); // Add the new post to the list
+        this.newPostContent = ''; // Clear the input after posting
+      },
+      error => {
+        console.error('Error adding post:', error);
       }
     );
   }

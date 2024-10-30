@@ -1,41 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { StorageService } from './storage.service'; // Import StorageService
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/users'; // Correct URL for users
+  private apiUrl = 'http://localhost:3000/api/users';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private storageService: StorageService) { }
 
-  // Method for logging in a user
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials)
-      .pipe(
-        catchError(error => {
-          console.error('Login error:', error);
-          return throwError(error); // Propagate the error
-        })
-      );
-  }   
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(response => {
+        // Assuming your API returns a token and username
+        this.storageService.setItem('token', response.token);
+        this.storageService.setItem('username', response.username);
 
-  // Method for signing up a new user
+        // Log the current username
+        console.log('Current Username:', response.username);
+      }),
+      catchError(error => {
+        console.error('Login error:', error);
+        return throwError(error);
+      })
+    );
+  }  
+
   signup(user: { email: string; password: string; username: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/signup`, user)
-      .pipe(
-        catchError(error => {
-          console.error('Signup error:', error);
-          return throwError(error); // Propagate the error
-        })
-      );
+      .pipe(catchError(error => {
+        console.error('Signup error:', error);
+        return throwError(error);
+      }));
   }
 
-  // Method to get headers with the token
   getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // or get it from cookies
+    const token = this.storageService.getItem('token'); // Use StorageService
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -44,5 +47,5 @@ export class AuthService {
 
   getUserProfile(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/profile`, { headers: this.getHeaders() });
-  }  
+  }
 }

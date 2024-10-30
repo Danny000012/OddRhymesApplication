@@ -1,30 +1,48 @@
-<div class="profile-container">
-    <h1 class="profile-title">User Profile</h1>
-    
-    <div *ngIf="user; else loading">
-      <div class="profile-info">
-        <h2>Profile Details</h2>
+<div class="container">
+  <div *ngIf="user; else loading">
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="mt-3">
+          <h6>Profile Picture</h6>
+          <input type="file" (change)="onImageChange($event)" class="form-control mb-2" />
+          <img *ngIf="user.profilePicture" [src]="user.profilePicture" alt="Profile Picture" class="img-fluid mb-2" />
+        </div>
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
+        
+        <div class="mt-3">
+          <h4>Bio</h4>
+          <textarea [(ngModel)]="user.bio" class="form-control mb-2" placeholder="Add your bio here"></textarea>
+        </div>
       </div>
-      
-      <div *ngIf="posts.length > 0; else noPosts">
-        <h2>User Posts</h2>
-        <ul class="post-list">
-          <li *ngFor="let post of posts" class="post-item">
-            <p>{{ post.content }}</p> <!-- Adjust according to your post structure -->
-            <button class="delete-button" (click)="deletePost(post._id)">Delete</button>
-          </li>
-        </ul>
-      </div>
-  
-      <ng-template #noPosts>
-        <p>No posts found.</p>
-      </ng-template>
     </div>
-    
-    <ng-template #loading>
-      <p class="loading-text">Loading user profile...</p>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4>Post Your Rap or Poetry</h4>
+        <textarea [(ngModel)]="newPostContent" class="form-control mb-2" placeholder="Write your rap or poetry here"></textarea>
+        <button class="btn btn-primary" (click)="addPost()">Post</button>
+      </div>
+    </div>
+
+    <div *ngIf="posts.length > 0; else noPosts">
+      <h2>User Posts</h2>
+      <ul class="post-list">
+        <li *ngFor="let post of posts" class="card mb-4">
+          <div class="card-body">
+            <p>{{ post.content }}</p>
+            <button class="btn btn-danger" (click)="deletePost(post._id)">Delete</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <ng-template #noPosts>
+      <p>No posts found.</p>
     </ng-template>
   </div>
   
+  <ng-template #loading>
+    <p class="loading-text">Loading user profile...</p>
+  </ng-template>
+</div>
