@@ -14,7 +14,11 @@ router.post('/signup', async (req, res) => {
   try {
     const user = new User({ username, email, password });
     await user.save();
-    res.status(201).json({ message: 'User created successfully' });
+
+    // Generate JWT token including username
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
+
+    res.status(201).json({ token, username: user.username, message: 'User created successfully' });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({ message: 'User already exists' });
@@ -23,7 +27,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Login route
 // Login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -38,19 +41,17 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Use comparePassword method from User model
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
-    
-    // Include the username in the response
+    // Generate JWT token including username
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.SECRET_KEY, { expiresIn: '1h' });
+
     res.json({ token, username: user.username, message: 'Login successful' });
   } catch (error) {
-    console.error('Login error:', error); // Add detailed error logging
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });

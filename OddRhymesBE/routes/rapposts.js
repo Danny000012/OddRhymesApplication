@@ -59,6 +59,21 @@ router.get('/paginate', async (req, res) => {
   }
 });
 
+// Get user profile by username
+router.get('/profile/:username', async (req, res) => {
+  try {
+    const user = await users.findOne({ username: req.params.username });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    // Exclude sensitive information if needed
+    const { password, ...userProfile } = user.toObject();
+    res.json(userProfile);
+  } catch (err) {
+    console.error('Error retrieving user profile:', err);
+    res.status(500).json({ error: 'An error occurred while retrieving the user profile' });
+  }
+});
+
 // Apply authentication middleware to protected routes
 router.use(authenticate);
 
@@ -175,19 +190,33 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Add a comment to a post (only if the user is the author of the comment)
-router.post('/:id/comments', async (req, res) => {
-  try {
-    const post = await rapPost.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+// Comment on a post
+router.post('/:id/comments', authenticate, async (req, res) => {
+  const { text } = req.body;
+  const postId = req.params.id;
 
-    const comment = { ...req.body, user: req.user.username };
+  if (!text) {
+    return res.status(400).json({ message: 'Comment text is required' });
+  }
+
+  try {
+    const post = await RapPost.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const comment = {
+      text,
+      user: req.user.username, // This should have the username now
+    };
+
     post.comments.push(comment);
     await post.save();
-    res.status(200).json(post);
-  } catch (err) {
-    console.error('Error adding comment:', err);
-    res.status(500).json({ error: 'An error occurred while adding the comment' });
+
+    res.status(201).json({ message: 'Comment added successfully', comment });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ message: 'An error occurred while adding the comment' });
   }
 });
 
@@ -218,10 +247,14 @@ router.put('/:postId/comments/:commentId', async (req, res) => {
   try {
     const post = await rapPost.findById(req.params.postId);
     if (!post) return res.status(404).json({ error: 'Post not found' });
-  
+
     const comment = post.comments.id(req.params.commentId);
     if (!comment) return res.status(404).json({ error: 'Comment not found' });
-  
+
+    if (comment.user !== req.user.username) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     comment.set(req.body);
     await post.save();
     res.json(post);
@@ -239,21 +272,6 @@ router.get('/', async (req, res) => {
   } catch (err) {
       console.error('Error fetching users:', err);
       res.status(500).json({ error: 'An error occurred while fetching users' });
-  }
-});
-
-// Get user profile by username
-router.get('/profile/:username', async (req, res) => {
-  try {
-    const user = await users.findOne({ username: req.params.username });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    
-    // Exclude sensitive information if needed
-    const { password, ...userProfile } = user.toObject();
-    res.json(userProfile);
-  } catch (err) {
-    console.error('Error retrieving user profile:', err);
-    res.status(500).json({ error: 'An error occurred while retrieving the user profile' });
   }
 });
 
