@@ -9,7 +9,9 @@ import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
-import { AppRoutingModule } from './app-routing.module';  // Import AppRoutingModule
+import { AppRoutingModule } from './app-routing.module';
+import { AnnouncementsComponent } from './announcements/announcements.component';
+import { AboutComponent } from './about/about.component';  // Import AppRoutingModule
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { AppRoutingModule } from './app-routing.module';  // Import AppRoutingMo
     LoginComponent,
     SignupComponent,
     NavbarComponent,
-    ProfileComponent
+    ProfileComponent,
+    AnnouncementsComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,

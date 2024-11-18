@@ -78,12 +78,12 @@ export class ProfileComponent implements OnInit {
       alert('Please enter post content.');
       return;
     }
-
+  
     const post = {
-      content: this.newPostContent,
-      user: this.user.username, // Assuming the username is used here
+      text: this.newPostContent, // Change 'content' to 'text'
+      user: this.user.username,   // Assuming the username is being passed as well
     };
-
+  
     this.postService.createRapPost(post).subscribe(
       response => {
         this.posts.push(response); // Add the new post to the list
@@ -93,5 +93,5 @@ export class ProfileComponent implements OnInit {
         console.error('Error adding post:', error);
       }
     );
-  }
+  }  
 }
