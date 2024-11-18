@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RapPostsService } from '../rap-posts.service';
+import { RapPostsService } from '../services/rap-posts.service';
 
 @Component({
   selector: 'app-rap-posts',

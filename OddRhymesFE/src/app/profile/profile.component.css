@@ -1,0 +1,18 @@
+/* src/app/profile/profile.component.css */
+
+.card {
+    border-radius: 0.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  button {
+    margin-right: 0.5rem;
+  }
+  
+  textarea {
+    resize: none;
+  }
+  
