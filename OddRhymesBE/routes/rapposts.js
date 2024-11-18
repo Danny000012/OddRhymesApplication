@@ -75,7 +75,7 @@ router.get('/profile/:username', async (req, res) => {
 });
 
 // Apply authentication middleware to protected routes
-router.use(authenticate);
+//router.use(authenticate);
 
 // Like a Post  
 router.post('/:id/like', async (req, res) => {
@@ -135,17 +135,12 @@ router.get('/user/:username', async (req, res) => {
 });
 
 // Create a new post
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
-    const { user } = req.body;
+    const user = req.user.username;  // Get username from the authenticated user (from JWT token)
+    const { text } = req.body;
 
-    // Check if user exists in the database
-    const existingUser = await users.findOne({ username: user });
-    if (!existingUser) {
-      return res.status(400).json({ error: 'User does not exist' });
-    }
-
-    const newPost = new rapPost(req.body);
+    const newPost = new rapPost({ user, text });
     await newPost.save();
     res.status(201).json(newPost);
   } catch (err) {
@@ -153,6 +148,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while saving the post' });
   }
 });
+
 
 // Update a post (only if the user is the author)
 router.put('/:id', async (req, res) => {
@@ -172,21 +168,31 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete a post (only if the user is the author)
-router.delete('/:id', async (req, res) => {
+// Route for deleting a post
+router.delete('/:postId', authenticate, async (req, res) => {
   try {
-    const post = await rapPost.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+    const { postId } = req.params;
+    const userId = req.user.id; // This comes from the JWT payload
 
-    if (post.user !== req.user.username) {
-      return res.status(403).json({ error: 'Unauthorized' });
+    // Find the post by ID
+    const post = await RapPost.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
     }
 
-    await rapPost.findByIdAndDelete(req.params.id);
-    res.status(204).send();  // 204 No Content
-  } catch (err) {
-    console.error('Error deleting post:', err);
-    res.status(500).json({ error: 'An error occurred while deleting the post' });
+    // Check if the current user is the author of the post
+    if (post.user.toString() !== userId) {
+      return res.status(403).json({ message: 'You are not authorized to delete this post' });
+    }
+
+    // Delete the post
+    await post.remove();
+
+    return res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
   }
 });
 
