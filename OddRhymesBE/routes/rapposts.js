@@ -168,27 +168,30 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// router.use(authenticate);
 // Route for deleting a post
 router.delete('/:postId', authenticate, async (req, res) => {
   try {
     const { postId } = req.params;
-    const userId = req.user.id; // This comes from the JWT payload
+    const userId = req.user.id; // From the JWT payload
 
     // Find the post by ID
-    const post = await RapPost.findById(postId);
-
+    const post = await rapPost.findById(postId);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
     // Check if the current user is the author of the post
-    if (post.user.toString() !== userId) {
+    if (post.user !== req.user.username) {
       return res.status(403).json({ message: 'You are not authorized to delete this post' });
     }
 
     // Delete the post
-    await post.remove();
-
+    //await rapPost.deleteOne({ _id: postId });
+    const deletedPost = await rapPost.findOneAndDelete({ _id: postId });
+    if (!deletedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
     return res.status(200).json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -206,7 +209,7 @@ router.post('/:id/comments', authenticate, async (req, res) => {
   }
 
   try {
-    const post = await RapPost.findById(postId);
+    const post = await rapPost.findById(postId);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
