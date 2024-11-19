@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RapPostsService } from '../services/rap-posts.service';
+import { UserService } from '../services/user.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-rap-posts',
@@ -49,14 +51,20 @@ export class RapPostsComponent implements OnInit {
 
   deletePost(postId: string): void {
     if (confirm('Are you sure you want to delete this post?')) {
-      this.rapPostsService.deletePost(postId).subscribe(() => {
-        // Remove the deleted post from the local array
-        this.rapPosts = this.rapPosts.filter(post => post._id !== postId);
-      }, error => {
-        console.error('Error deleting post:', error);
+      this.rapPostsService.deletePost(postId).subscribe({
+        next: (response) => {
+          console.log('Post deleted successfully:', response);
+          // Remove the deleted post from the local array
+          this.rapPosts = this.rapPosts.filter(post => post._id !== postId);
+        },
+        error: (err) => {
+          console.error('Error deleting post:', err);
+          alert('Something went wrong; please try again later.');
+        }
       });
     }
   }
+    
 
   updateComment(postId: string, commentId: string): void {
     // Add form fields for updating comment

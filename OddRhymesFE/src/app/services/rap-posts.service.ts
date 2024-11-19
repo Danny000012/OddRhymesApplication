@@ -15,6 +15,7 @@ export class RapPostsService {
 
   private getHeaders(): HttpHeaders {
     const token = this.storageService.getItem('token'); // Use StorageService
+    console.log('Token:', token);
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
