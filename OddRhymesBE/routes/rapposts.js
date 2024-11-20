@@ -216,7 +216,7 @@ router.post('/:id/comments', authenticate, async (req, res) => {
 
     const comment = {
       text,
-      user: req.user.username, // This should have the username now
+      user: req.user.username, // Use the authenticated user's username
     };
 
     post.comments.push(comment);
