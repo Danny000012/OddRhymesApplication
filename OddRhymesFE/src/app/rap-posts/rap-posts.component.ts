@@ -11,14 +11,14 @@ import { take } from 'rxjs/operators';
 export class RapPostsComponent implements OnInit {
   rapPosts: any[] = [];
   newPost = { user: '', text: '' };
-  newComment = { user: '', text: '' };
+  newComment = { text: '' };
   searchUser = '';
   searchText = '';
   searchLimit: number = 10; // Default limit
   searchId = '';
   currentPage = 1;
 
-  constructor(private rapPostsService: RapPostsService) { }
+  constructor(private rapPostsService: RapPostsService, private userService: UserService) { }
 
   ngOnInit(): void {
     this.loadPosts();
@@ -38,9 +38,16 @@ export class RapPostsComponent implements OnInit {
   }
 
   addComment(postId: string): void {
-    this.rapPostsService.addComment(postId, this.newComment).subscribe(() => {
+    // Here you create a temporary object for the API call
+    const commentWithUser = {
+      text: this.newComment.text,
+      user: this.userService.getCurrentUsername() || ''
+    };
+
+    // Pass the temporary object to the service, which now only includes text
+    this.rapPostsService.addComment(postId, commentWithUser).subscribe(() => {
       this.loadPosts();
-      this.newComment = { user: '', text: '' }; // Clear form
+      this.newComment = { text: '' }; // Reset only the text after comment addition
     });
   }
 

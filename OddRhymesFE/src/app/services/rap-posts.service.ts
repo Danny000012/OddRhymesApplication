@@ -35,9 +35,9 @@ export class RapPostsService {
   }
 
   // Add a comment to a specific rap post
-  addComment(postId: string, comment: any): Observable<any> {
+  addComment(postId: string, comment: { text: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${postId}/comments`, comment, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError)); // Handle errors
+      .pipe(catchError(this.handleError));
   }
 
   // Update a rap post by ID
