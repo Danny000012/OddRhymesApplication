@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RapPostsService } from '../services/rap-posts.service';
 import { UserService } from '../services/user.service';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-rap-posts',
@@ -14,9 +13,10 @@ export class RapPostsComponent implements OnInit {
   newComment = { text: '' };
   searchUser = '';
   searchText = '';
-  searchLimit: number = 10; // Default limit
+  searchLimit: number = 10;
   searchId = '';
   currentPage = 1;
+  userRatings = new Map<string, number>();
 
   constructor(private rapPostsService: RapPostsService, private userService: UserService) { }
 
@@ -33,49 +33,36 @@ export class RapPostsComponent implements OnInit {
   addPost(): void {
     this.rapPostsService.createRapPost(this.newPost).subscribe(() => {
       this.loadPosts();
-      this.newPost = { user: '', text: '' }; // Clear form
+      this.newPost = { user: '', text: '' };
     });
   }
 
   addComment(postId: string): void {
-    // Here you create a temporary object for the API call
     const commentWithUser = {
       text: this.newComment.text,
       user: this.userService.getCurrentUsername() || ''
     };
 
-    // Pass the temporary object to the service, which now only includes text
     this.rapPostsService.addComment(postId, commentWithUser).subscribe(() => {
       this.loadPosts();
-      this.newComment = { text: '' }; // Reset only the text after comment addition
+      this.newComment = { text: '' };
     });
   }
 
   updatePost(postId: string): void {
-    // Add form fields for updating post
-    // Use a dialog or form to collect updated data
+    // Implement update post logic here
   }
 
   deletePost(postId: string): void {
     if (confirm('Are you sure you want to delete this post?')) {
-      this.rapPostsService.deletePost(postId).subscribe({
-        next: (response) => {
-          console.log('Post deleted successfully:', response);
-          // Remove the deleted post from the local array
-          this.rapPosts = this.rapPosts.filter(post => post._id !== postId);
-        },
-        error: (err) => {
-          console.error('Error deleting post:', err);
-          alert('Something went wrong; please try again later.');
-        }
+      this.rapPostsService.deletePost(postId).subscribe(() => {
+        this.rapPosts = this.rapPosts.filter(post => post._id !== postId);
       });
     }
   }
-    
 
   updateComment(postId: string, commentId: string): void {
-    // Add form fields for updating comment
-    // Use a dialog or form to collect updated data
+    // Implement update comment logic here
   }
 
   deleteComment(postId: string, commentId: string): void {
@@ -91,7 +78,37 @@ export class RapPostsComponent implements OnInit {
   }
 
   ratePost(postId: string): void {
-    // Implement rating logic and collect rating value
+    const rating = this.userRatings.get(postId);
+    if (!rating || rating === 0) {
+      alert('Please select a rating before submitting.');
+      return;
+    }
+  
+    this.rapPostsService.ratePost(postId, rating).subscribe({
+      next: (response) => {
+        if (response.isRatingFinal) {
+          alert('Post rated successfully! The rating is now final.');
+        } else {
+          alert('Post rated successfully!');
+        }
+        // Update the post with the new rating data
+        this.rapPosts = this.rapPosts.map(post => 
+          post._id === postId ? response : post
+        );
+      },
+      error: (err) => {
+        if (err.error === 'The rating for this post has already been finalized') {
+          alert('Rating for this post has already been finalized. No further ratings can be submitted.');
+        } else {
+          console.error('Error rating post:', err);
+          alert('There was an error rating this post. Please try again.');
+        }
+      }
+    });
+  }
+
+  onSelectRating(postId: string, rating: number): void {
+    this.userRatings.set(postId, rating);
   }
 
   searchPosts(): void {
@@ -99,14 +116,14 @@ export class RapPostsComponent implements OnInit {
       this.rapPosts = posts;
     });
   }
-  
+
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.searchPosts();
     }
   }
-  
+
   nextPage(): void {
     this.currentPage++;
     this.searchPosts();
@@ -118,6 +135,6 @@ export class RapPostsComponent implements OnInit {
     this.searchId = '';
     this.searchLimit = 10;
     this.currentPage = 1; // Reset to the first page
-    this.loadPosts(); // Optionally reload all posts or search results
+    this.loadPosts();
   }
 }
