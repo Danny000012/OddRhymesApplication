@@ -93,16 +93,33 @@ router.post('/:id/like', async (req, res) => {
 });
   
 // Rate a Post
-router.post('/:id/rate', async (req, res) => {
+router.post('/:id/rate', authenticate, async (req, res) => {
   const { rating } = req.body;
   if (rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be between 1 and 5' });
-  
+
   try {
     const post = await rapPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
-  
-    post.ratings = post.ratings || [];
-    post.ratings.push(rating);
+
+    if (post.isRatingFinal) {
+      return res.status(400).json({ error: 'The rating for this post has already been finalized' });
+    }
+
+    // Check if user has already rated
+    if (post.ratings.some(r => r.userId.equals(req.user._id))) {
+      return res.status(400).json({ error: 'You have already rated this post' });
+    }
+
+    post.ratings.push({ userId: req.user._id, rating: rating });
+    post.ratingCount++;
+
+    // If we've reached 5 ratings, calculate average and finalize rating
+    if (post.ratingCount >= 5) {
+      const totalRatings = post.ratings.reduce((sum, r) => sum + r.rating, 0);
+      post.averageRating = totalRatings / post.ratings.length;
+      post.isRatingFinal = true;
+    }
+
     await post.save();
     res.json(post);
   } catch (err) {
@@ -168,27 +185,30 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// router.use(authenticate);
 // Route for deleting a post
 router.delete('/:postId', authenticate, async (req, res) => {
   try {
     const { postId } = req.params;
-    const userId = req.user.id; // This comes from the JWT payload
+    const userId = req.user.id; // From the JWT payload
 
     // Find the post by ID
-    const post = await RapPost.findById(postId);
-
+    const post = await rapPost.findById(postId);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
     // Check if the current user is the author of the post
-    if (post.user.toString() !== userId) {
+    if (post.user !== req.user.username) {
       return res.status(403).json({ message: 'You are not authorized to delete this post' });
     }
 
     // Delete the post
-    await post.remove();
-
+    //await rapPost.deleteOne({ _id: postId });
+    const deletedPost = await rapPost.findOneAndDelete({ _id: postId });
+    if (!deletedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
     return res.status(200).json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -206,14 +226,14 @@ router.post('/:id/comments', authenticate, async (req, res) => {
   }
 
   try {
-    const post = await RapPost.findById(postId);
+    const post = await rapPost.findById(postId);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
     const comment = {
       text,
-      user: req.user.username, // This should have the username now
+      user: req.user.username, // Use the authenticated user's username
     };
 
     post.comments.push(comment);
@@ -227,7 +247,7 @@ router.post('/:id/comments', authenticate, async (req, res) => {
 });
 
 // Delete a comment (only if the user is the author of the comment)
-router.delete('/:postId/comments/:commentId', async (req, res) => {
+router.delete('/:postId/comments/:commentId', authenticate, async (req, res) => {
   try {
     const post = await rapPost.findById(req.params.postId);
     if (!post) return res.status(404).json({ error: 'Post not found' });
@@ -235,13 +255,18 @@ router.delete('/:postId/comments/:commentId', async (req, res) => {
     const comment = post.comments.id(req.params.commentId);
     if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-    if (comment.user !== req.user.username) {
-      return res.status(403).json({ error: 'Unauthorized' });
+    // Check if the user is authenticated and if they are the author of the comment
+    if (!req.user || comment.user !== req.user.username) {
+      return res.status(403).json({ error: 'Unauthorized to delete this comment' });
     }
 
+    // Remove the comment
     post.comments.pull(req.params.commentId);
+    // Save the post after removing the comment
     await post.save();
-    res.status(204).send();  // 204 No Content
+
+    // Send a success response
+    res.status(200).json({ message: 'Comment deleted successfully' });
   } catch (err) {
     console.error('Error deleting comment:', err);
     res.status(500).json({ error: 'An error occurred while deleting the comment' });

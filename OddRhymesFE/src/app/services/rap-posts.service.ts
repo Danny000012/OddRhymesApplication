@@ -15,6 +15,7 @@ export class RapPostsService {
 
   private getHeaders(): HttpHeaders {
     const token = this.storageService.getItem('token'); // Use StorageService
+    console.log('Token:', token);
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -34,9 +35,9 @@ export class RapPostsService {
   }
 
   // Add a comment to a specific rap post
-  addComment(postId: string, comment: any): Observable<any> {
+  addComment(postId: string, comment: { text: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${postId}/comments`, comment, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError)); // Handle errors
+      .pipe(catchError(this.handleError));
   }
 
   // Update a rap post by ID

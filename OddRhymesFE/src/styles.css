@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+/* styles.css */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --secondary-text-color: #666666;
+    --button-bg: #007bff;
+    --button-text: #ffffff;
+    --card-bg: #f8f9fa;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Dark mode styles */
+  body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --secondary-text-color: #b3b3b3;
+    --button-bg: #4CAF50;
+    --button-text: #000000;
+    --card-bg: #292929;
+  }
+  
+  /* Apply styles to common elements */
+  button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+  }
+  
+  .card {
+    background-color: var(--card-bg);
+  }
+  
+  /* ... rest of your global styles */
+  /* In any component's CSS */
+ .card-body {
+  padding: 1.5rem;
+  color: var(--text-color);
+}

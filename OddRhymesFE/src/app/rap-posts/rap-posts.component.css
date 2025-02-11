@@ -15,3 +15,32 @@ button {
 textarea {
   resize: none;
 }
+
+/* Added styles for the rating system */
+.rating-section {
+  font-size: 24px; /* or any size you prefer for the stars */
+}
+
+.rating-section span {
+  cursor: pointer;
+  transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+.star-selected {
+  color: gold; /* Selected stars turn gold */
+}
+
+.rating-section span:hover {
+  color: gold; /* Stars turn gold on hover as well */
+}
+
+.rating-section button {
+  vertical-align: middle; /* Align the rate button with the stars */
+  font-size: 14px; /* Adjust the font-size to match with stars if needed */
+}
+
+ /* In any component's CSS */
+ .card-body {
+  padding: 1.5rem;
+  color: var(--text-color);
+}
