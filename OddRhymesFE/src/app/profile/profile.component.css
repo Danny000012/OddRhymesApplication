@@ -16,3 +16,8 @@
     resize: none;
   }
   
+  /* In any component's CSS */
+.card-body {
+  padding: 1.5rem;
+  color: var(--text-color);
+}

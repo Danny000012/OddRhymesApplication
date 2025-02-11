@@ -38,3 +38,9 @@ textarea {
   vertical-align: middle; /* Align the rate button with the stars */
   font-size: 14px; /* Adjust the font-size to match with stars if needed */
 }
+
+ /* In any component's CSS */
+ .card-body {
+  padding: 1.5rem;
+  color: var(--text-color);
+}
